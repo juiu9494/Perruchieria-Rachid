@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grazie!</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: block;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+      padding: 20px;
+    }
+
+    header img {
+      max-width: 150px;
+      margin-top: 20px;
+    }
+
+    h1 {
+      color: #2b7a78;
+      font-size: 48px;
+      margin: 20px 0;
+    }
+
+    p {
+      font-size: 20px;
+      max-width: 600px;
+      margin: 10px 0;
+    }
+
+    a.button {
+      display: inline-block;
+      margin-top: 30px;
+      text-decoration: none;
+      background-color: #2b7a78;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 18px;
+    }
+
+    a.button:hover {
+      background-color: #3aafa9;
+    }
+
+    footer {
+        margin: -60px;
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 14px;
+      color: #ccc;
+      z-index: 1;
+    }
+
+    footer .info {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Arrière-plan animé -->
+  <canvas id="canvas"></canvas>
+
+  <!-- Contenu de la page -->
+  <div class="container">
+
+    <!-- Logo -->
+    <header>
+      <img src="Logo.png" alt="Logo"> <!-- 🔁 Remplace par ton chemin/logo -->
+    </header>
+
+    <!-- Message de confirmation -->
+    <h1>Grazie!</h1>
+    <p>Abbiamo ricevuto il tuo messaggio.<br>
+    Il tuo appuntamento è stato prenotato con successo.</p>
+    <p>Ti contatteremo al più presto per la conferma definitiva.</p>
+    <a class="button" href="Perruchieria rachid.html">Torna alla pagina principale</a>
+  </div>
+
+  <!-- Pied de page -->
+  <footer>
+    <div class="info">📍 VIA FLAMINIA 538, 60015, Falconara Marittima, Ancona – 339 585 6701 ☎️ </div>
+    <div class="credits">Sito creato da <strong>Matagens1982@gmail.com</strong> </div>
+  </footer>
+
+  <!-- Script particules -->
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    const pointer = { x: width / 2, y: height / 2 };
+    const particles = [];
+    const numParticles = 100;
+    const maxDistance = 150;
+
+    for (let i = 0; i < numParticles; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: (Math.random() - 0.5) * 1.5,
+        radius: 2
+      });
+    }
+
+    window.addEventListener("mousemove", (e) => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+    });
+
+    window.addEventListener("resize", () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDistance) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${1 - dist / maxDistance})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+
+        const dx = p.x - pointer.x;
+        const dy = p.y - pointer.y;
+        const distMouse = Math.sqrt(dx * dx + dy * dy);
+
+        if (distMouse < 100) {
+          p.vx += dx / distMouse * 0.1;
+          p.vy += dy / distMouse * 0.1;
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  </script>
+</body>
+</html>
